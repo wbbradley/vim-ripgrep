@@ -1,6 +1,6 @@
 # vim-ripgrep
 
-    :Rg <string|pattern>
+    :RipGrep <string|pattern>
 
 Word under cursor will be searched if no argument is passed to `Rg`
 
@@ -21,4 +21,4 @@ Word under cursor will be searched if no argument is passed to `Rg`
 
 Show root search dir
 
-    :RgRoot
+    :RipGrepRoot

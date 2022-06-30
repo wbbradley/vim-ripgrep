@@ -24,15 +24,15 @@ if !exists('g:rg_window_location')
   let g:rg_window_location = 'botright'
 endif
 
-fun! g:RgVisual() range
-  call s:RgGrepContext(function('s:RgSearch'), '"' . s:RgGetVisualSelection() . '"')
+fun! g:RipGrepVisual() range
+  call s:RipGrepGrepContext(function('s:RipGrepSearch'), '"' . s:RipGrepGetVisualSelection() . '"')
 endfun
 
-fun! s:Rg(txt)
-  call s:RgGrepContext(function('s:RgSearch'), s:RgSearchTerm(a:txt))
+fun! s:RipGrep(txt)
+  call s:RipGrepGrepContext(function('s:RipGrepSearch'), s:RipGrepSearchTerm(a:txt))
 endfun
 
-fun! s:RgGetVisualSelection()
+fun! s:RipGrepGetVisualSelection()
     " Why is this not a built-in Vim script function?!
     let [line_start, column_start] = getpos("'<")[1:2]
     let [line_end, column_end] = getpos("'>")[1:2]
@@ -45,7 +45,7 @@ fun! s:RgGetVisualSelection()
     return join(lines, "\n")
 endfun
 
-fun! s:RgSearchTerm(txt)
+fun! s:RipGrepSearchTerm(txt)
   if empty(a:txt)
     return expand("<cword>")
   else
@@ -53,7 +53,7 @@ fun! s:RgSearchTerm(txt)
   endif
 endfun
 
-fun! s:RgSearch(txt)
+fun! s:RipGrepSearch(txt)
   let l:rgopts = ' '
   if &ignorecase == 1
     let l:rgopts = l:rgopts . '-i '
@@ -66,7 +66,7 @@ fun! s:RgSearch(txt)
     exe g:rg_window_location 'copen'
     redraw!
     if exists('g:rg_highlight')
-      call s:RgHighlight(a:txt)
+      call s:RipGrepHighlight(a:txt)
     endif
   else
     cclose
@@ -75,7 +75,7 @@ fun! s:RgSearch(txt)
   endif
 endfun
 
-fun! s:RgGrepContext(search, txt)
+fun! s:RipGrepGrepContext(search, txt)
   let l:grepprgb = &grepprg
   let l:grepformatb = &grepformat
   let &grepprg = g:rg_command
@@ -90,7 +90,7 @@ fun! s:RgGrepContext(search, txt)
   endif
 
   if exists('g:rg_derive_root')
-    call s:RgPathContext(a:search, a:txt)
+    call s:RipGrepPathContext(a:search, a:txt)
   else
     call a:search(a:txt)
   endif
@@ -102,26 +102,26 @@ fun! s:RgGrepContext(search, txt)
   let &grepformat = l:grepformatb
 endfun
 
-fun! s:RgPathContext(search, txt)
+fun! s:RipGrepPathContext(search, txt)
   let l:cwdb = getcwd()
-  exe 'lcd '.s:RgRootDir()
+  exe 'lcd '.s:RipGrepRootDir()
   call a:search(a:txt)
   exe 'lcd '.l:cwdb
 endfun
 
-fun! s:RgHighlight(txt)
+fun! s:RipGrepHighlight(txt)
   let @/=escape(substitute(a:txt, '"', '', 'g'), '|')
   call feedkeys(":let &hlsearch=1\<CR>", 'n')
 endfun
 
-fun! s:RgRootDir()
+fun! s:RipGrepRootDir()
   let l:cwd = getcwd()
   let l:dirs = split(getcwd(), '/')
 
   for l:dir in reverse(copy(l:dirs))
     for l:type in g:rg_root_types
-      let l:path = s:RgMakePath(l:dirs, l:dir)
-      if s:RgHasFile(l:path.'/'.l:type)
+      let l:path = s:RipGrepMakePath(l:dirs, l:dir)
+      if s:RipGrepHasFile(l:path.'/'.l:type)
         return l:path
       endif
     endfor
@@ -129,21 +129,21 @@ fun! s:RgRootDir()
   return l:cwd
 endfun
 
-fun! s:RgMakePath(dirs, dir)
+fun! s:RipGrepMakePath(dirs, dir)
   return '/'.join(a:dirs[0:index(a:dirs, a:dir)], '/')
 endfun
 
-fun! s:RgHasFile(path)
+fun! s:RipGrepHasFile(path)
   return filereadable(a:path) || isdirectory(a:path)
 endfun
 
-fun! s:RgShowRoot()
+fun! s:RipGrepShowRoot()
   if exists('g:rg_derive_root')
-    echo s:RgRootDir()
+    echo s:RipGrepRootDir()
   else
     echo getcwd()
   endif
 endfun
 
-command! -nargs=* -complete=file Rg :call s:Rg(<q-args>)
-command! RgRoot :call s:RgShowRoot()
+command! -nargs=* -complete=file RipGrep :call s:RipGrep(<q-args>)
+command! RipGrepRoot :call s:RipGrepShowRoot()
